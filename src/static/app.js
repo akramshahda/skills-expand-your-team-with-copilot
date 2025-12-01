@@ -652,27 +652,55 @@ document.addEventListener("DOMContentLoaded", () => {
         window.open(
           `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(activityUrl)}`,
           "_blank",
-          "noopener,noreferrer"
+          "noopener,noreferrer,width=600,height=400"
         );
         break;
       case "facebook":
         window.open(
           `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(activityUrl)}&quote=${encodeURIComponent(shareText)}`,
           "_blank",
-          "noopener,noreferrer"
+          "noopener,noreferrer,width=600,height=400"
         );
         break;
       case "email":
         window.location.href = `mailto:?subject=${encodeURIComponent(shareTitle)}&body=${encodeURIComponent(shareText + "\n\n" + activityUrl)}`;
         break;
       case "copy":
-        navigator.clipboard.writeText(activityUrl).then(() => {
-          showMessage("Link copied to clipboard!", "success");
-        }).catch(() => {
-          showMessage("Failed to copy link", "error");
-        });
+        copyToClipboard(activityUrl);
         break;
     }
+  }
+
+  // Copy text to clipboard with fallback for older browsers
+  function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        showMessage("Link copied to clipboard!", "success");
+      }).catch(() => {
+        fallbackCopyToClipboard(text);
+      });
+    } else {
+      fallbackCopyToClipboard(text);
+    }
+  }
+
+  // Fallback copy method for browsers without clipboard API
+  function fallbackCopyToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-9999px";
+    textArea.style.top = "-9999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand("copy");
+      showMessage("Link copied to clipboard!", "success");
+    } catch (err) {
+      showMessage("Failed to copy link", "error");
+    }
+    document.body.removeChild(textArea);
   }
 
   // Close share dropdowns when clicking outside
