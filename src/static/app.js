@@ -27,8 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Theme toggle elements
   const themeToggle = document.getElementById("theme-toggle");
-  const themeIcon = themeToggle.querySelector(".theme-icon");
-  const themeLabel = themeToggle.querySelector(".theme-label");
+  const themeIcon = themeToggle ? themeToggle.querySelector(".theme-icon") : null;
+  const themeLabel = themeToggle ? themeToggle.querySelector(".theme-label") : null;
 
   // Activity categories with corresponding colors
   const activityTypes = {
@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Dark mode functions
   function initializeTheme() {
+    if (!themeToggle) return;
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") {
       document.body.classList.add("dark-mode");
@@ -66,8 +67,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateThemeButton(isDark) {
-    themeIcon.textContent = isDark ? "☀️" : "🌙";
-    themeLabel.textContent = isDark ? "Light" : "Dark";
+    if (themeIcon) themeIcon.textContent = isDark ? "☀️" : "🌙";
+    if (themeLabel) themeLabel.textContent = isDark ? "Light" : "Dark";
   }
 
   function toggleTheme() {
@@ -77,7 +78,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Theme toggle event listener
-  themeToggle.addEventListener("click", toggleTheme);
+  if (themeToggle) {
+    themeToggle.addEventListener("click", toggleTheme);
+  }
 
   // Initialize theme on page load
   initializeTheme();

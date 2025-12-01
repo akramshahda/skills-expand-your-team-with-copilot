@@ -699,22 +699,10 @@ footer {
 #theme-toggle {
   position: absolute;
   top: 10px;
-  right: 150px;
-  background-color: rgba(255, 255, 255, 0.2);
-  border: none;
-  border-radius: 20px;
-  padding: 4px 12px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.85rem;
+  right: 100px;
   color: var(--primary-text);
-  transition: background-color 0.2s;
-}
-
-#theme-toggle:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+  border: none;
+  cursor: pointer;
 }
 
 #theme-toggle .theme-icon {
