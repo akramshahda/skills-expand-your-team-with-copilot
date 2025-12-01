@@ -519,6 +519,29 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
+    // Create share button with dropdown
+    const shareButtonHtml = `
+      <div class="share-container">
+        <button class="share-button" data-activity="${name}" aria-label="Share ${name}">
+          <span class="share-icon">📤</span> Share
+        </button>
+        <div class="share-dropdown hidden">
+          <button class="share-option" data-platform="twitter" data-activity="${name}">
+            <span>𝕏</span> Twitter/X
+          </button>
+          <button class="share-option" data-platform="facebook" data-activity="${name}">
+            <span>f</span> Facebook
+          </button>
+          <button class="share-option" data-platform="email" data-activity="${name}">
+            <span>✉</span> Email
+          </button>
+          <button class="share-option" data-platform="copy" data-activity="${name}">
+            <span>🔗</span> Copy Link
+          </button>
+        </div>
+      </div>
+    `;
+
     activityCard.innerHTML = `
       ${tagHtml}
       <h4>${name}</h4>
@@ -553,6 +576,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </ul>
       </div>
       <div class="activity-card-actions">
+        ${shareButtonHtml}
         ${
           currentUser
             ? `
@@ -587,8 +611,76 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // Add click handlers for share button and dropdown
+    const shareButton = activityCard.querySelector(".share-button");
+    const shareDropdown = activityCard.querySelector(".share-dropdown");
+    const shareOptions = activityCard.querySelectorAll(".share-option");
+
+    shareButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      // Close all other open dropdowns first
+      document.querySelectorAll(".share-dropdown").forEach((dropdown) => {
+        if (dropdown !== shareDropdown) {
+          dropdown.classList.add("hidden");
+        }
+      });
+      shareDropdown.classList.toggle("hidden");
+    });
+
+    shareOptions.forEach((option) => {
+      option.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const platform = option.dataset.platform;
+        const activityName = option.dataset.activity;
+        handleShare(platform, activityName, details);
+        shareDropdown.classList.add("hidden");
+      });
+    });
+
     activitiesList.appendChild(activityCard);
   }
+
+  // Handle sharing to different platforms
+  function handleShare(platform, activityName, details) {
+    const pageUrl = window.location.href.split("?")[0]; // Base URL without query params
+    const activityUrl = `${pageUrl}?activity=${encodeURIComponent(activityName)}`;
+    const shareText = `Check out ${activityName} at Mergington High School! ${details.description}`;
+    const shareTitle = `${activityName} - Mergington High School Activities`;
+
+    switch (platform) {
+      case "twitter":
+        window.open(
+          `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(activityUrl)}`,
+          "_blank",
+          "noopener,noreferrer"
+        );
+        break;
+      case "facebook":
+        window.open(
+          `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(activityUrl)}&quote=${encodeURIComponent(shareText)}`,
+          "_blank",
+          "noopener,noreferrer"
+        );
+        break;
+      case "email":
+        window.location.href = `mailto:?subject=${encodeURIComponent(shareTitle)}&body=${encodeURIComponent(shareText + "\n\n" + activityUrl)}`;
+        break;
+      case "copy":
+        navigator.clipboard.writeText(activityUrl).then(() => {
+          showMessage("Link copied to clipboard!", "success");
+        }).catch(() => {
+          showMessage("Failed to copy link", "error");
+        });
+        break;
+    }
+  }
+
+  // Close share dropdowns when clicking outside
+  document.addEventListener("click", () => {
+    document.querySelectorAll(".share-dropdown").forEach((dropdown) => {
+      dropdown.classList.add("hidden");
+    });
+  });
 
   // Event listeners for search and filter
   searchInput.addEventListener("input", (event) => {
