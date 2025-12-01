@@ -25,6 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeLoginModal = document.querySelector(".close-login-modal");
   const loginMessage = document.getElementById("login-message");
 
+  // Theme toggle elements
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeIcon = themeToggle ? themeToggle.querySelector(".theme-icon") : null;
+  const themeLabel = themeToggle ? themeToggle.querySelector(".theme-label") : null;
+
   // Activity categories with corresponding colors
   const activityTypes = {
     sports: { label: "Sports", color: "#e8f5e9", textColor: "#2e7d32" },
@@ -50,6 +55,35 @@ document.addEventListener("DOMContentLoaded", () => {
     afternoon: { start: "15:00", end: "18:00" }, // After school hours
     weekend: { days: ["Saturday", "Sunday"] }, // Weekend days
   };
+
+  // Dark mode functions
+  function initializeTheme() {
+    if (!themeToggle) return;
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+      document.body.classList.add("dark-mode");
+      updateThemeButton(true);
+    }
+  }
+
+  function updateThemeButton(isDark) {
+    if (themeIcon) themeIcon.textContent = isDark ? "☀️" : "🌙";
+    if (themeLabel) themeLabel.textContent = isDark ? "Light" : "Dark";
+  }
+
+  function toggleTheme() {
+    const isDark = document.body.classList.toggle("dark-mode");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+    updateThemeButton(isDark);
+  }
+
+  // Theme toggle event listener
+  if (themeToggle) {
+    themeToggle.addEventListener("click", toggleTheme);
+  }
+
+  // Initialize theme on page load
+  initializeTheme();
 
   // Initialize filters from active elements
   function initializeFilters() {
